@@ -1,5 +1,7 @@
 #title,url,text,dead,by,score,time,type,id,parent,descendants,ranking,deleted,timestamp
 #helper file that cleans corrupt data or incorrect data types
+
+
 with open("data.csv") as f:
     with open("new.csv", "w") as f1:
         for line in f:
