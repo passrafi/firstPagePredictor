@@ -1,5 +1,9 @@
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
+from nltk.tokenize import RegexpTokenizer
+tokenizer = RegexpTokenizer(r'\w+').tokenize
+
+
 STOPWORDS = stopwords.words('english')
 
 import re
@@ -11,43 +15,39 @@ import pandas as pd
 #svm  / draws boundry lines  
 #latent semantic indexing
 #topic modeling <--investigate later on
+TEST_WORDS = 'a tester fishes sentences doesn\'t require what\'s not here, It\'s there'
 class NLP:    
-    #order might matter
-    df = pd.read_csv("new.csv", names=names, header=None, delim_whitespace=True)
-    self.stem  = SnowballStemmer('english').stem
+    def __init__(self):
+        #df = pd.read_csv("new.csv", names=names, header=None, delim_whitespace=True)
+        self.stem  = SnowballStemmer('english').stem
 
 
-    def select_training_subset():
+    def select_training_subset(self):
         #ensure data is valid top level data
         #reorder file contents randomly
+        pass
 
-    def preprocess_word(word):
-        #stemming/lemmatization
-        word = self.lemmatize(word)
-        #TODO stopword/punctuation removal
-
-        
-
-    def preprocess():
-        #do lemmatization first #Anvesh
-        #then do stemming #Rafi
-        #remove stop words and punctuation, remove non ascii words #Anvesh
-        #handle word boundries #Rafi
-        #lowercase everything #Rafi
-
-
+    def preprocess(self):
+        #TODO replace TEST_WORDS with real data
+        text = TEST_WORDS
+        text = text.lower()
+        words = tokenizer(text)
+        wordsFiltered = []
+        for w in words:
+            w = self.stem(w)
+            if w not in STOPWORDS:
+                wordsFiltered.append(w)
+        print wordsFiltered
+        #remove non ascii words #Anvesh
         """
-        Stemming/Lemmatizing
-        Converting all words to lower case
-        Punctuation removal
-        Stop words removal
         Converting Numerics to words(1990 to one nine nine zero)
         """
-        pass
         
-    def process()
+    def process(self):
         #try using  TFIDF
         #also try doc2vec
         #TODO think about synthetic features
         pass
 
+nlp = NLP()
+nlp.preprocess()
