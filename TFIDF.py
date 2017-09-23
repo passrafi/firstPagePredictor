@@ -83,13 +83,16 @@ class tfidf:
 					self.n_containing[word] = -1
 					self.bottleNeck(word, bloblist) #synchronously called for now but could be optimized
 					#pPool.apply_async(self.bottleNeck, (word, bloblist,), callback=self.update_Dict)
-					
+			if(i % 3000 == 0):
+				print i, len(self.n_containing.keys())
+		wordFreqs = pd.from_dict(self.n_containing)
+		wordFreqs.to_csv("/home/anvesh/Desktop/tfidf")			
 		#pPool.close()
 		#pPool.join()				
 	def update_Dict(self, retVal):
 		D =  json.loads(retVal)	
 		for r in D:
-			self.n_containing[r] = 1.0 *retVal[r]	
+			self.n_containing[r] = 1.0 * retVal[r]	
 		
 	def bottleNeck(self, word, bloblist):
 		x = sum(1 for blob1 in bloblist if word in blob1.split())
