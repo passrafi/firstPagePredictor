@@ -32,13 +32,17 @@ class NLP:
 		
         pass
 
+    
     def preprocess(self, text):
+	
         #TODO replace TEST_WORDS with real data
         #remove non ascii words #Anvesh
-	self.selectedRows["title"].update(self.selectedRows["title"].str.replace(r'[^\x00-\x7F]+', ' '))
-	self.selectedRows["title"].update(self.selectedRows["title"].str.lower())
-	
-        #words = tokenizer(text)
+	self.select_training_subset()
+	self.selectedRows["title"] = self.selectedRows["title"].str.replace(r'[^\x00-\x7F]+', ' ')
+	self.selectedRows["title"] = self.selectedRows["title"].str.lower()
+	print self.selectedRows.head()			
+        
+	#words = tokenizer(text)
         #wordsFiltered = []
         #for w in words:
         #    w = self.stem(w)
