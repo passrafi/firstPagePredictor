@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 import scipy
 import warnings
-warnings.filterwarnings("ignore")
 
 from sklearn.cross_validation import cross_val_score
 from sklearn.preprocessing import StandardScaler
@@ -24,10 +23,10 @@ from nltk import word_tokenize
 from nltk.stem.porter import PorterStemmer
 from nltk.stem.snowball import SnowballStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
-from __future__ import division
 import numpy as np
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.metrics import mean_squared_error, mean_absolute_error, median_absolute_error
+warnings.filterwarnings("ignore")
 
 RANDOM_SEED_SPLIT_1 = 8859
 RANDOM_SEED_SPLIT_2 = 3259
@@ -332,8 +331,9 @@ def classification_errors(y_true, y_pred, model_name=''):
 
     # convert decimals to rounded percentages
     perc = lambda x: round(x * 100, 2)
-
     print "\n{0}".format(model_name)
+    print y_true, y_pred
+    import bpdb; bpdb.set_trace()
     print "Confusion Matrix:\n", confusion_matrix(y_true, y_pred)
     print "Accuracy:", perc( accuracy_score(y_true, y_pred) )
     print "Precision:", perc( precision_score(y_true, y_pred, average='weighted') )

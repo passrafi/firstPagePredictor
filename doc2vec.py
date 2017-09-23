@@ -12,18 +12,14 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 STOPWORDS = stopwords.words('english')
 import pandas as pd
-
 from utils import *
+
 KEEP_COLS = [
     'title',
     'url',
     'text',
-    '',
-    'e_point',
-    'senti_1_rate',
-    'senti_1_neg_cnt',
-    'senti_2_rate',
-    'senti_2_neg_cnt'
+    'time',
+    'score',
 ]
 
 
@@ -104,7 +100,7 @@ class Doc2VecClassifier(object):
         # train the model
         for epoch in range(10):
             print 'epoch', epoch
-            self.model.train(itt)
+            self.model.train(itt, total_examples=self.model.corpus_count, epochs=self.model.iter)
             self.model.alpha -= 0.002
             self.model.min_alpha = self.model.alpha
 
@@ -121,8 +117,8 @@ class Doc2VecClassifier(object):
         for label in test_dict.iterkeys():
             # since the model contains both training and test data we get the k * 3
             # nearest vectors and keep the k nearest vectors in the training data
-            most_sim = self.model.docvecs.most_similar(label, topn=k*3)
-
+            most_sim = self.model.docvecs.most_similar(str(label), topn=k*3)
+            import bpdb; bpdb.set_trace()
             votes = []
             for lab, sim in most_sim:
                 # only keep vectors in the training data
@@ -152,10 +148,10 @@ def doc2vec_model(df, train_dict, test_dict, k):
 
     print 'Fitting the Doc2Vec model...'
     d2v = Doc2VecClassifier()
-    d2v.fit(df['text'].values, df['review_id'].values)
+    d2v.fit(df['text'].values, df['id'].values)
     y_pred = d2v.predict(train_dict, test_dict, k)
     y_test = test_dict.values()
-
+     
     classification_errors(y_test, y_pred, 'Doc2Vec with k = {0}'.format(k))
 
     return d2v.model
@@ -174,15 +170,15 @@ def doc2vec_examples(yelp_model):
 if __name__ == '__main__':
 
     # load and preprocess the yelp reviews data
-    df = pd.read_csv("new.csv") 
+    df = pd.read_csv("new.csv")[0:1000]
 
     # exploratory data analysis plots
     #show_all_eda(df)
 
     # split data into training, test, and validation sets
     df_train, df_test, df_val = df_train_test_val_split(df[KEEP_COLS])
-    X_train, y_train, X_test, y_test, X_val, y_val = train_test_val_split(df[KEEP_COLS], 'stars')
-    train_dict, test_dict, val_dict = train_test_val_dicts(df, 'review_id', 'stars')
+    X_train, y_train, X_test, y_test, X_val, y_val = train_test_val_split(df[KEEP_COLS], 'score')
+    train_dict, test_dict, val_dict = train_test_val_dicts(df, 'id', 'score')
 
     # use grid search to optimize stage 1 & 2 model parameters
     #grid_search_naive_bayes_with_tfidf(df_train['text'].values, df_train['stars'].values)
