@@ -18,7 +18,7 @@ import pandas as pd
 TEST_WORDS = 'a tester fishes sentences doesn\'t require what\'s not here, It\'s there'
 class NLP:    
     def __init__(self):
-        #df = pd.read_csv("new.csv", names=names, header=None, delim_whitespace=True)
+        #df = pd.read_csv("new.csv")
         self.stem  = SnowballStemmer('english').stem
 
 

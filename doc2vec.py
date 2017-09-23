@@ -11,6 +11,20 @@ from collections import Counter
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 STOPWORDS = stopwords.words('english')
+import pandas as pd
+
+from utils import *
+KEEP_COLS = [
+    'title',
+    'url',
+    'text',
+    '',
+    'e_point',
+    'senti_1_rate',
+    'senti_1_neg_cnt',
+    'senti_2_rate',
+    'senti_2_neg_cnt'
+]
 
 
 def most_common_element(arr):
@@ -62,7 +76,7 @@ class LabeledLineSentence(object):
 
         perms = np.random.permutation( zip(self.doc_list, self.labels_list) )
         for text, label in perms:
-            all_words, without_stop = process.(text)
+            all_words, without_stop = text_tokenizer(text)
             yield LabeledSentence(all_words, [label])
 
 class Doc2VecClassifier(object):
@@ -122,3 +136,63 @@ class Doc2VecClassifier(object):
             y_pred.append(most_common_element(votes))
 
         return y_pred
+
+def doc2vec_model(df, train_dict, test_dict, k):
+    """Fit, predict, and show classification results for the Doc2Vec model.
+    Parameters
+    ----------
+    df: DataFrame, full dataset
+    train_dict: dictionary, training data mapping labels to stars
+    test_dict: dictionary, test data mapping labels to stars
+    k: number of nearest vectors to use for classification
+    Returns
+    -------
+    trained Doc2Vec model
+    """
+
+    print 'Fitting the Doc2Vec model...'
+    d2v = Doc2VecClassifier()
+    d2v.fit(df['text'].values, df['review_id'].values)
+    y_pred = d2v.predict(train_dict, test_dict, k)
+    y_test = test_dict.values()
+
+    classification_errors(y_test, y_pred, 'Doc2Vec with k = {0}'.format(k))
+
+    return d2v.model
+
+def doc2vec_examples(yelp_model):
+    """Print examples using the Doc2Vec model trained with yelp reviews data."""
+
+    print '\nDoc2Vec examples:'
+    print yelp_model.most_similar('pizza')
+    print yelp_model.doesnt_match('burrito taco nachos pasta'.split())
+    print yelp_model.doesnt_match('waiter server bartender napkin'.split())
+    print yelp_model.most_similar(positive=['bar', 'food'], negative=['alcohol'])
+    print yelp_model.most_similar(positive=['drink', 'hot', 'caffeine'])
+
+
+if __name__ == '__main__':
+
+    # load and preprocess the yelp reviews data
+    df = pd.read_csv("new.csv") 
+
+    # exploratory data analysis plots
+    #show_all_eda(df)
+
+    # split data into training, test, and validation sets
+    df_train, df_test, df_val = df_train_test_val_split(df[KEEP_COLS])
+    X_train, y_train, X_test, y_test, X_val, y_val = train_test_val_split(df[KEEP_COLS], 'stars')
+    train_dict, test_dict, val_dict = train_test_val_dicts(df, 'review_id', 'stars')
+
+    # use grid search to optimize stage 1 & 2 model parameters
+    #grid_search_naive_bayes_with_tfidf(df_train['text'].values, df_train['stars'].values)
+    #grid_search_stage_two(X_train, y_train)
+
+    # fit and print classification results for the two stage tfidf model
+    #two_stage_model(X_train, y_train, X_test, y_test)
+
+    # fit and print classification results for the Doc2Vec model
+    model = doc2vec_model(df, train_dict, test_dict, k=25)
+
+    # use the Doc2Vec model
+    doc2vec_examples(model)
