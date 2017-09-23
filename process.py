@@ -32,7 +32,8 @@ class NLP:
 		
         pass
 
-    
+    def removeStops(self, stuff):
+	return ' '.join([word for word in stuff.split() if word not in STOPWORDS])
     def preprocess(self, text):
 	
         #TODO replace TEST_WORDS with real data
@@ -40,8 +41,10 @@ class NLP:
 	self.select_training_subset()
 	self.selectedRows["title"] = self.selectedRows["title"].str.replace(r'[^\x00-\x7F]+', ' ')
 	self.selectedRows["title"] = self.selectedRows["title"].str.lower()
+	self.selectedRows["title"] = self.selectedRows["title"].str.replace(r'[^\w\s]', ' ')
 	print self.selectedRows.head()			
-        
+        self.selectedRows["title"] = self.selectedRows["title"].map(lambda val: self.removeStops(val))
+	print self.selectedRows.head()
 	#words = tokenizer(text)
         #wordsFiltered = []
         #for w in words:
