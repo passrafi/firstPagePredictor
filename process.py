@@ -27,7 +27,7 @@ class NLP:
         #reorder file contents randomly
         pass
 
-    def preprocess(self):
+    def preprocess(self, text):
         #TODO replace TEST_WORDS with real data
         text = TEST_WORDS
         text = text.lower()
