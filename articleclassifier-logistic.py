@@ -108,9 +108,15 @@ def train_linear_classifier_model(
   # Train the model, but do so inside a loop so that we can periodically assess
   # loss metrics.
   print "Training model..."
-  print "Log loss (on training data):"
-  training_errors = []
-  validation_errors = []
+  print "Per period ROC (on training data):"
+  #print "Log loss (on training data):"
+  #training_errors = []
+  #validation_errors = []
+  training_loglossvals = []
+  validation_loglossvals = []
+  training_rocvals = []
+  validation_rocvals = []
+
   for period in range (0, periods):
     # Train the model, starting from the prior state.
     linear_classifier.fit(
@@ -129,8 +135,20 @@ def train_linear_classifier_model(
     # Occasionally print the current loss.
     print "  period %02d : %0.2f" % (period, training_roc)
     # Add the loss metrics from this period to our list.
-    training_errors.append(training_roc)
-    validation_errors.append(validation_roc)
+    #training_errors.append(training_roc)
+    #validation_errors.append(validation_roc)
+    training_rocvals.append(training_roc)
+    validation_rocvals.append(validation_roc)
+    training_loglossvals.append(training_log_loss)
+    validation_loglossvals.append(validation_log_loss)
+  print "LogLoss error (on training data):"
+  print training_loglossvals
+  print "LogLoss error (on validation data):"
+  print validation_loglossvals
+  print "ROC (on training data):"
+  print training_rocvals
+  print "ROC (on validation data):"
+  print validation_rocvals
   print "Model training finished."
 
   # Output a graph of loss metrics over periods.
