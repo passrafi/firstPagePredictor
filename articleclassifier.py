@@ -26,6 +26,29 @@ from sklearn.preprocessing import StandardScaler
 tf.logging.set_verbosity(tf.logging.ERROR)
 pd.options.display.max_rows = 10
 pd.options.display.float_format = '{:.1f}'.format
+#####################
+path_train = "doc2vec.csv"
+
+path_scores="doc2vecIndex.csv"
+threshold=50
+print("Loading Train Data")
+train = pd.read_csv(path_train, sep=",")
+print train.count
+scores=pd.read_csv(path_scores, sep=",")
+print scores.count
+print scores['score']
+scores_list=scores['score']
+targets=[]
+for idx in xrange(len(scores_list)):
+    if scores_list[idx]>threshold:
+        targets.append(1)
+    else:
+        targets.append(0)
+targets = pd.DataFrame(targets)
+print targets
+
+
+
 ######################
 def train_linear_classifier_model(
     learning_rate,
@@ -84,7 +107,7 @@ def train_linear_classifier_model(
   # Train the model, but do so inside a loop so that we can periodically assess
   # loss metrics.
   print "Training model..."
-  print "ROC (on training data):"
+  print "Log loss (on training data):"
   training_errors = []
   validation_errors = []
   for period in range (0, periods):
@@ -98,21 +121,21 @@ def train_linear_classifier_model(
     training_probabilities = np.array(list(linear_classifier.predict_proba(input_fn=predict_training_input_fn)))
     validation_probabilities = np.array(list(linear_classifier.predict_proba(input_fn=predict_validation_input_fn)))
     # Compute training and validation loss.
-    training_log_loss = metrics.log_loss(training_targets, training_predictions)
-    validation_log_loss = metrics.log_loss(validation_targets, validation_predictions)
+    training_log_loss = metrics.log_loss(training_targets, training_probabilities[:,1])
+    validation_log_loss = metrics.log_loss(validation_targets, validation_probabilities[:,1])
     training_roc = metrics.roc_auc_score(training_targets, training_probabilities[:, 1])
     validation_roc = metrics.roc_auc_score(validation_targets, validation_probabilities[:, 1])
     # Occasionally print the current loss.
-    print "  period %02d : %0.2f" % (period, training_roc)
+    print "  period %02d : %0.2f" % (period, training_log_loss)
     # Add the loss metrics from this period to our list.
-    training_errors.append(training_roc)
-    validation_errors.append(validation_roc)
+    training_errors.append(training_log_loss)
+    validation_errors.append(validation_log_loss)
   print "Model training finished."
 
   # Output a graph of loss metrics over periods.
-  plt.ylabel("ROC")
+  plt.ylabel("LogLoss")
   plt.xlabel("Periods")
-  plt.title("ROC vs. Periods")
+  plt.title("LogLoss vs. Periods")
   plt.tight_layout()
   plt.plot(training_errors, label="training")
   plt.plot(validation_errors, label="validation")
@@ -120,31 +143,22 @@ def train_linear_classifier_model(
 
   return linear_classifier
 #####################
-path_train = "train.csv"
-path_test= "test.csv"
-path_targets="targets.csv"
-
-print("Loading Train Data")
-train = pd.read_csv(path_train, sep=",")
-train
-targets=pd.read_csv(path_targets, sep=",")
-#train = train.reindex(np.random.permutation(train.index))
 
 print("Validation...")
 
-nb_folds = 2
-kfolds = KFold(len(wnv), nb_folds)
+nb_folds = 4
+kfolds = KFold(len(targets), nb_folds, shuffle=True, random_state=1337)
 av_roc = 0.
 f = 0
 
 print kfolds
 
-'''
-    To train the logistic regression classifier with features and target data
-    :param features:
-    :param target:
-    :return: trained  classifier
-'''
+
+#    To train the logistic regression classifier with features and target data
+#    :param features:
+#    :param target:
+#    :return: trained  classifier
+
 for trainrows, validrows in kfolds:
     print('---'*20)
     print('Fold', f)
@@ -154,16 +168,16 @@ for trainrows, validrows in kfolds:
     train_validation = train.iloc[validrows,:]
     labels_train = targets.iloc[trainrows]
     labels_validation = targets.iloc[validrows]
-    
+
     linear_classifier = train_linear_classifier_model(
-    learning_rate=0.000005,
+    learning_rate=0.05,
     steps=500,
     batch_size=20,
     training_examples=train_rows,
     training_targets=labels_train,
     validation_examples=train_validation,
     validation_targets=labels_validation)
-
+'''
 
 ########################
 def train_nn_classification_model(
@@ -179,7 +193,7 @@ def train_nn_classification_model(
   In addition to training, this function also prints training progress information,
   a plot of the training and validation loss over time, as well as a confusion
   matrix.
-  
+
   Args:
     learning_rate: An `int`, the learning rate to use.
     steps: A non-zero `int`, the total number of training steps. A training step
@@ -190,14 +204,14 @@ def train_nn_classification_model(
     training_targets: A `DataFrame` containing the training labels.
     validation_examples: A `DataFrame` containing the validation features.
     validation_targets: A `DataFrame` containing the validation labels.
-      
+
   Returns:
     The trained `DNNClassifier` object.
   """
 
   periods = 10
   steps_per_period = steps / periods
-  
+
   # Create the input functions.
   predict_training_input_fn = create_predict_input_fn(
     training_examples, training_targets)
@@ -250,7 +264,7 @@ def train_nn_classification_model(
   # Calculate final predictions (not probabilities, as above).
   final_predictions = list(classifier.predict(validation_examples))
   accuracy = metrics.accuracy_score(validation_targets, final_predictions)
-  print "Final accuracy (on validation data): %0.2f" % accuracy  
+  print "Final accuracy (on validation data): %0.2f" % accuracy
 
   # Output a graph of loss metrics over periods.
   plt.ylabel("LogLoss")
@@ -260,7 +274,7 @@ def train_nn_classification_model(
   plt.plot(validation_errors, label="validation")
   plt.legend()
   plt.show()
-  
+
   # Output a plot of the confusion matrix.
   cm = metrics.confusion_matrix(validation_targets, final_predictions)
   # Normalize the confusion matrix by row (i.e by the number of samples
@@ -282,12 +296,12 @@ f = 0
 
 print kfolds
 
-'''
-    To train the DNN classifier with features and target data
-    :param features:
-    :param target:
-    :return: trained  classifier
-'''
+
+#    To train the DNN classifier with features and target data
+#    :param features:
+#    :param target:
+#    :return: trained  classifier
+
 for trainrows, validrows in kfolds:
     print('---'*20)
     print('Fold', f)
@@ -297,7 +311,7 @@ for trainrows, validrows in kfolds:
     train_validation = train.iloc[validrows,:]
     labels_train = targets.iloc[trainrows]
     labels_validation = targets.iloc[validrows]
-    
+
     classifier = train_nn_classification_model(
     learning_rate=0.05,
     steps=1000,
@@ -307,5 +321,4 @@ for trainrows, validrows in kfolds:
     training_targets=labels_train,
     validation_examples=train_validation,
     validation_targets=labels_validation)
-    
-    
+'''
