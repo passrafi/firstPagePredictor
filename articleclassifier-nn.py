@@ -120,11 +120,11 @@ def train_nn_classification_model(
   training_rocvals = []
   validation_rocvals = []
 
-  training_precisionvals = []
-  validation_precisionvals = []
-  training_recallvals = []
-  validation_recallvals = []
-  thresh=0.7
+  #training_precisionvals = []
+  #validation_precisionvals = []
+  #training_recallvals = []
+  #validation_recallvals = []
+  #thresh=0.7
   for period in range (0, periods):
     # Train the model, starting from the prior state.
     classifier.fit(
