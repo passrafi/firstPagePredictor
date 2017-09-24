@@ -111,7 +111,7 @@ def train_nn_classification_model(
   # loss metrics.
 
   print "Training model..."
-  print "LogLoss error (on validation data):"
+  print "LogLoss error (on training data):"
   training_errors = []
   validation_errors = []
   for period in range (0, periods):
@@ -129,10 +129,10 @@ def train_nn_classification_model(
     training_roc = metrics.roc_auc_score(training_targets, training_predictions[:, 1])
     validation_roc = metrics.roc_auc_score(validation_targets, validation_predictions[:, 1])
     # Occasionally print the current loss.
-    print "  period %02d : %0.2f" % (period, validation_log_loss)
+    print "  period %02d : %0.2f" % (period, training_roc)
     # Add the loss metrics from this period to our list.
-    training_errors.append(training_log_loss)
-    validation_errors.append(validation_log_loss)
+    training_errors.append(training_roc)
+    validation_errors.append(validation_roc)
   print "Model training finished."
   # Remove event files to save disk space.
   #_ = map(os.remove, glob.glob(os.path.join(classifier.model_dir, 'events.out.tfevents*')))
@@ -190,10 +190,10 @@ for trainrows, validrows in kfolds:
     labels_validation = targets.iloc[validrows]
 
     classifier = train_nn_classification_model(
-    learning_rate=0.05,
+    learning_rate=0.005,
     steps=1000,
-    batch_size=20,
-    hidden_units=[10, 10],
+    batch_size=100,
+    hidden_units=[100, 100],
     training_examples=train_rows,
     training_targets=labels_train,
     validation_examples=train_validation,
