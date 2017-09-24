@@ -45,15 +45,8 @@ class NLP:
 	print self.selectedRows.head()			
         self.selectedRows["title"] = self.selectedRows["title"].map(lambda val: self.removeStops(val))
 	print self.selectedRows.head()
-	#words = tokenizer(text)
-        #wordsFiltered = []
-        #for w in words:
-        #    w = self.stem(w)
-        #    if w not in STOPWORDS:
-        #        wordsFiltered.append(w)
-        #print wordsFiltered
-        #
-        """
+	
+	"""
         Converting Numerics to words(1990 to one nine nine zero)
         """
         
