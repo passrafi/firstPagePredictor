@@ -127,10 +127,10 @@ def train_linear_classifier_model(
     training_roc = metrics.roc_auc_score(training_targets, training_probabilities[:, 1])
     validation_roc = metrics.roc_auc_score(validation_targets, validation_probabilities[:, 1])
     # Occasionally print the current loss.
-    print "  period %02d : %0.2f" % (period, training_log_loss)
+    print "  period %02d : %0.2f" % (period, training_roc)
     # Add the loss metrics from this period to our list.
-    training_errors.append(training_log_loss)
-    validation_errors.append(validation_log_loss)
+    training_errors.append(training_roc)
+    validation_errors.append(validation_roc)
   print "Model training finished."
 
   # Output a graph of loss metrics over periods.
