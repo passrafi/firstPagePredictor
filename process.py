@@ -60,7 +60,7 @@ class NLP:
 
     def preprocess(self):
         print 'starting preprocess'
-        for i in xrange(0, 1000):#len(self.df['title'])):
+        for i in xrange(0, len(self.df['title'])):
             self.df['title'][i] = self.preprocess_line(self.df['title'][i])
             if i%100 ==0:
                 print i

@@ -117,7 +117,7 @@ class Doc2VecClassifier(object):
         for label in test_dict.iterkeys():
             # since the model contains both training and test data we get the k * 3
             # nearest vectors and keep the k nearest vectors in the training data
-            most_sim = self.model.docvecs.most_similar(str(label), topn=k*3)
+            most_sim = self.model.docvecs.most_similar(unicode(label), topn=k*3)
             votes = []
             for lab, sim in most_sim:
                 # only keep vectors in the training data
