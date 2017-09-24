@@ -111,9 +111,20 @@ def train_nn_classification_model(
   # loss metrics.
 
   print "Training model..."
-  print "LogLoss error (on training data):"
-  training_errors = []
-  validation_errors = []
+  print "Per period ROC (on training data):"
+  #training_errors = []
+  #validation_errors = []
+
+  training_loglossvals = []
+  validation_loglossvals = []
+  training_rocvals = []
+  validation_rocvals = []
+
+  training_precisionvals = []
+  validation_precisionvals = []
+  training_recallvals = []
+  validation_recallvals = []
+  thresh=0.7
   for period in range (0, periods):
     # Train the model, starting from the prior state.
     classifier.fit(
@@ -128,12 +139,44 @@ def train_nn_classification_model(
     validation_log_loss = metrics.log_loss(validation_targets, validation_predictions[:,1])
     training_roc = metrics.roc_auc_score(training_targets, training_predictions[:, 1])
     validation_roc = metrics.roc_auc_score(validation_targets, validation_predictions[:, 1])
+    #training_precision = metrics.precision_score(training_targets, (training_predictions[:, 1]>thresh).astype(int))
+    #validation_precision = metrics.precision_score(validation_targets, validation_predictions[:, 1])
+    #training_recall = metrics.recall_score(training_targets, training_predictions[:, 1])
+    #validation_recall = metrics.recall_score(validation_targets, validation_predictions[:, 1])
     # Occasionally print the current loss.
     print "  period %02d : %0.2f" % (period, training_roc)
     # Add the loss metrics from this period to our list.
-    training_errors.append(training_roc)
-    validation_errors.append(validation_roc)
+    training_rocvals.append(training_roc)
+    validation_rocvals.append(validation_roc)
+    training_loglossvals.append(training_log_loss)
+    validation_loglossvals.append(validation_log_loss)
+
+    #training_precisionvals.append(training_precision)
+    #validation_precisionvals.append(validation_precision)
+    #training_recallvals.append(training_recall)
+    #validation_recallvals.append(validation_recall)
+
+
+  print "LogLoss error (on training data):"
+  print training_loglossvals
+  print "LogLoss error (on validation data):"
+  print validation_loglossvals
+  print "ROC (on training data):"
+  print training_rocvals
+  print "ROC (on validation data):"
+  print validation_rocvals
+  #print "Precision (on training data):"
+  #print training_precisionvals
+  #print "Precision (on validation data):"
+  #print validation_precisionvals
+  #print "Recall (on training data):"
+  #print training_recallvals
+  #print "Recall (on validation data):"
+  #print validation_recallvals
   print "Model training finished."
+  return classifier
+
+
   # Remove event files to save disk space.
   #_ = map(os.remove, glob.glob(os.path.join(classifier.model_dir, 'events.out.tfevents*')))
 
@@ -163,7 +206,7 @@ def train_nn_classification_model(
   #plt.xlabel("Predicted label")
   #plt.show()
 
-  return classifier
+
 ###############
 
 nb_folds = 4
@@ -191,9 +234,9 @@ for trainrows, validrows in kfolds:
 
     classifier = train_nn_classification_model(
     learning_rate=0.005,
-    steps=1000,
-    batch_size=100,
-    hidden_units=[100, 100],
+    steps=10000,
+    batch_size=20,
+    hidden_units=[1024, 512, 256],
     training_examples=train_rows,
     training_targets=labels_train,
     validation_examples=train_validation,
