@@ -11,11 +11,6 @@ from multiprocessing import Process, Pool, Queue
 import datetime
 import time
 import json
-def preproc_data(hnadf):
-	score = hnadf["score"]
-	title = hnadf["title"]
-	x = hnadf.loc[title.notnull() & score.notnull() & score.apply(lambda val: val > 50)] 
-	return x	
 
 def produce_histogram(hnadf):
 	x = preproc_data(hnadf)	
@@ -35,18 +30,17 @@ class tfidf:
 		self.numProcs = numProcs #don't really need this data saved but whatever
 		self.dataArr = np.array_split(dataSet, numProcs)
 		self.tfidfArr = []
-		self.Q = Queue()	
 		self.n_containing = {}
 		
 		self.dataSet = dataSet
 		
 		# move this shit elsewhere
-		x = preproc_data(dataSet)	
+		#x = preproc_data(dataSet)	
 		#print type(z)	
 		#remove stop words sorta like this...
 		#y = x["title"].apply(lambda val: set(tb(val).lower().words) - stop_words)
 
-		z = x["title"].apply(lambda val: tb(val))
+		z = dataSet["title"].apply(lambda val: tb(val))
 		print "number of records: ", len(z.tolist())
 		
 		i = 0
@@ -99,8 +93,9 @@ class tfidf:
 		self.n_containing[word] = x
 	def calc_tf_idf(self, titleSeries, procIdx):	
 		scores = titleSeries.apply(lambda blob: {word: self.exec_tfidf(word, blob) for word in blob.words})
+		#modify this path (will output one file per process
 		scores.to_csv("/home/anvesh/Desktop/tfidf-" + str(procIdx) + "-.log")
-
+		
 
 	def runAll(self):
 		print "starting " + str(self.numProcs) + " workers..."	
@@ -112,7 +107,7 @@ class tfidf:
 	
 
 
-hnadf = pd.read_csv("hacker_news_sample.csv", sep=",", encoding = 'utf8')
+#hnadf = pd.read_csv("hacker_news_sample.csv", sep=",", encoding = 'utf8')
 ts = time.time()
 st1 = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 

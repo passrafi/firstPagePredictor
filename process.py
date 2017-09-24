@@ -57,9 +57,7 @@ class NLP:
         #self.selectedRows["title"] = self.selectedRows["title"].map(lambda val: self.removeStops(val))
         #print self.selectedRows.head()
         
-        """
-        Converting Numerics to words(1990 to one nine nine zero)
-        """
+
     def preprocess(self):
         print 'starting preprocess'
         for i in xrange(0, 1000):#len(self.df['title'])):
