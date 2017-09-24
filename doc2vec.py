@@ -156,26 +156,18 @@ def doc2vec_model(df, train_dict, test_dict, k):
 
     return d2v.model
 
-def doc2vec_examples(yelp_model):
+def doc2vec_examples(model):
     """Print examples using the Doc2Vec model trained with yelp reviews data."""
 
     print '\nDoc2Vec examples:'
-    print yelp_model.most_similar('pizza')
-    print yelp_model.doesnt_match('burrito taco nachos pasta'.split())
-    print yelp_model.doesnt_match('waiter server bartender napkin'.split())
-    print yelp_model.most_similar(positive=['bar', 'food'], negative=['alcohol'])
-    print yelp_model.most_similar(positive=['drink', 'hot', 'caffeine'])
+    print model.most_similar('pizza')
+    print model.doesnt_match('nsa snowden russia amazon'.split())
+    print model.doesnt_match('waiter server bartender napkin'.split())
+    print model.most_similar(positive=['bar', 'food'], negative=['alcohol'])
+    print model.most_similar(positive=['drink', 'hot', 'coffee'])
+    import bpdb; bpdb.set_trace()
 
-
-if __name__ == '__main__':
-
-    # load and preprocess the yelp reviews data
-    df = pd.read_csv("new.csv")[0:10000]
-
-    # exploratory data analysis plots
-    #show_all_eda(df)
-
-    # split data into training, test, and validation sets
+def do_doc2vec(df):
     df_train, df_test, df_val = df_train_test_val_split(df[KEEP_COLS])
     X_train, y_train, X_test, y_test, X_val, y_val = train_test_val_split(df[KEEP_COLS], 'score')
     train_dict, test_dict, val_dict = train_test_val_dicts(df, 'url', 'score')
@@ -189,6 +181,27 @@ if __name__ == '__main__':
 
     # fit and print classification results for the Doc2Vec model
     model = doc2vec_model(df, train_dict, test_dict, k=25)
-
+    export_vec(model)
     # use the Doc2Vec model
     doc2vec_examples(model)
+
+def export_vec(model):
+    outputStr = ''
+    for i in xrange(0, len(model.docvecs[0])):
+        outputStr += str(i) + ','
+    outputStr = outputStr[:-1]
+
+    for storyVec in model.docvecs:
+        outputStr += '\n' + str(storyVec.tolist())[1:-1].replace(' ', '')
+    with  open('doc2vec.csv', 'w') as f:
+        f.write(outputStr)
+
+
+if __name__ == '__main__':
+    # load and preprocess the yelp reviews data
+    df = pd.read_csv("new.csv")[0:10000]
+    do_doc2vec(df)
+    # exploratory data analysis plots
+    #show_all_eda(df)
+
+    # split data into training, test, and validation sets
