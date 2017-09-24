@@ -69,7 +69,7 @@ class NLP:
 
 
     def process(self):
-        do_doc2vec(self.df[0:10000])
+        do_doc2vec(self.df[0:40000])
         #try using  TFIDF
         #also try doc2vec
         #TODO think about synthetic features
