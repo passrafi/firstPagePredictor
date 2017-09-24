@@ -211,7 +211,7 @@ def train_nn_classification_model(
       training_examples)
   classifier = tf.contrib.learn.DNNClassifier(
       feature_columns=feature_columns,
-      n_classes=10,
+      n_classes=2,
       hidden_units=hidden_units,
       optimizer=tf.train.AdagradOptimizer(learning_rate=learning_rate),
       gradient_clip_norm=5.0,
