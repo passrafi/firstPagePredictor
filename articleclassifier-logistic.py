@@ -49,7 +49,7 @@ for idx in xrange(len(scores_list)):
 targets = pd.DataFrame(targets)
 print targets
 
-
+'''
 ######################
 def train_linear_classifier_model(
     learning_rate,
@@ -178,3 +178,5 @@ for trainrows, validrows in kfolds:
     training_targets=labels_train,
     validation_examples=train_validation,
     validation_targets=labels_validation)
+'''
+

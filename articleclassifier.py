@@ -33,7 +33,7 @@ path_scores="doc2vecIndex.csv"
 threshold=50
 print("Loading Train Data")
 train = pd.read_csv(path_train, sep=",")
-print train.count
+#print train.count
 scores=pd.read_csv(path_scores, sep=",")
 print scores.count
 print scores['score']
