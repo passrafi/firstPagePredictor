@@ -40,8 +40,6 @@ class NLP:
         return ' '.join([word for word in stuff.split() if word not in STOPWORDS])
 
     def preprocess_line(self, text):
-        #TODO replace TEST_WORDS with real data
-        #remove non ascii words #Anvesh
         words = tokenizer(text)
         wordsFiltered = []
         self.df
@@ -61,7 +59,9 @@ class NLP:
     def preprocess(self):
         print 'starting preprocess'
         for i in xrange(0, 100):# len(self.df['title'])):
+            #TODO PARELLIZE THIS LINE
             self.df['title'][i] = self.preprocess_line(self.df['title'][i])
+            #TODO PARELLIZE THE ABOVE LINE
             if i%100 ==0:
                 print i
         print 'done with preprocess'
