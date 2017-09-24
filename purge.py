@@ -13,7 +13,7 @@ def word_count (words):
     return len(words.split(" "))
 
 
-data = pd.read_csv('hacker_news_sample.csv')
+data = pd.read_csv('new.csv')
 
 # maxes = data.groupby('url', group_keys=False).apply(lambda x: x.ix[x.score.idxmax()])
 

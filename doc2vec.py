@@ -158,14 +158,15 @@ def doc2vec_model(df, train_dict, test_dict, k):
 
 def doc2vec_examples(model):
     """Print examples using the Doc2Vec model trained with yelp reviews data."""
-
+    """
     print '\nDoc2Vec examples:'
     print model.most_similar('pizza')
     print model.doesnt_match('nsa snowden russia amazon'.split())
     print model.doesnt_match('waiter server bartender napkin'.split())
     print model.most_similar(positive=['bar', 'food'], negative=['alcohol'])
     print model.most_similar(positive=['drink', 'hot', 'coffee'])
-    import bpdb; bpdb.set_trace()
+    """
+    pass
 
 def do_doc2vec(df):
     df_train, df_test, df_val = df_train_test_val_split(df[KEEP_COLS])
@@ -182,6 +183,7 @@ def do_doc2vec(df):
     # fit and print classification results for the Doc2Vec model
     model = doc2vec_model(df, train_dict, test_dict, k=25)
     export_vec(model)
+    import bpdb; bpdb.set_trace()
     # use the Doc2Vec model
     doc2vec_examples(model)
 
@@ -193,6 +195,7 @@ def export_vec(model):
 
     for storyVec in model.docvecs:
         outputStr += '\n' + str(storyVec.tolist())[1:-1].replace(' ', '')
+
     with  open('doc2vec.csv', 'w') as f:
         f.write(outputStr)
 

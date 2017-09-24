@@ -60,7 +60,7 @@ class NLP:
 
     def preprocess(self):
         print 'starting preprocess'
-        for i in xrange(0, len(self.df['title'])):
+        for i in xrange(0, 100):# len(self.df['title'])):
             self.df['title'][i] = self.preprocess_line(self.df['title'][i])
             if i%100 ==0:
                 print i
@@ -69,11 +69,11 @@ class NLP:
 
 
     def process(self):
-        do_doc2vec(self.df[0:40000])
+        do_doc2vec(self.df[0:100])
+
         #try using  TFIDF
         #also try doc2vec
         #TODO think about synthetic features
-        pass
 
 nlp = NLP()
 nlp.process()
