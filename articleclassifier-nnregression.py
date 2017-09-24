@@ -42,13 +42,16 @@ scores=pd.read_csv(path_scores, sep=",")
 print scores.count
 print scores['score']
 scores_list=scores['score']
+scores_list.astype(float);
 targets=[]
 for idx in xrange(len(scores_list)):
-    if scores_list[idx]>threshold:
-        targets.append(1)
-    else:
-        targets.append(0)
-targets = scores_list#pd.DataFrame(targets)
+    #if scores_list[idx]>threshold:
+    #    targets.append(1)
+    #else:
+        #targets.append(0)
+    #print max(scores_list[idx],0.01),scores_list[idx],math.log(max(scores_list[idx],0.01))
+    targets.append(math.log(max(scores_list[idx],0.0001)))
+targets = pd.DataFrame(targets)
 print targets
 ########################
 def train_nn_regression_model(
