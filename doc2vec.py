@@ -19,7 +19,7 @@ KEEP_COLS = [
     'url',
     'text',
     'time',
-    'score',
+    'score'
 ]
 
 
@@ -118,7 +118,6 @@ class Doc2VecClassifier(object):
             # since the model contains both training and test data we get the k * 3
             # nearest vectors and keep the k nearest vectors in the training data
             most_sim = self.model.docvecs.most_similar(str(label), topn=k*3)
-            import bpdb; bpdb.set_trace()
             votes = []
             for lab, sim in most_sim:
                 # only keep vectors in the training data
@@ -130,6 +129,7 @@ class Doc2VecClassifier(object):
 
             # the most common value from the k nearest vectors is the prediction
             y_pred.append(most_common_element(votes))
+        print y_pred, '\n======================================================='
 
         return y_pred
 
@@ -148,7 +148,7 @@ def doc2vec_model(df, train_dict, test_dict, k):
 
     print 'Fitting the Doc2Vec model...'
     d2v = Doc2VecClassifier()
-    d2v.fit(df['text'].values, df['id'].values)
+    d2v.fit(df['title'].values, df['url'].values)
     y_pred = d2v.predict(train_dict, test_dict, k)
     y_test = test_dict.values()
      
@@ -170,7 +170,7 @@ def doc2vec_examples(yelp_model):
 if __name__ == '__main__':
 
     # load and preprocess the yelp reviews data
-    df = pd.read_csv("new.csv")[0:1000]
+    df = pd.read_csv("new.csv")[0:10000]
 
     # exploratory data analysis plots
     #show_all_eda(df)
@@ -178,7 +178,7 @@ if __name__ == '__main__':
     # split data into training, test, and validation sets
     df_train, df_test, df_val = df_train_test_val_split(df[KEEP_COLS])
     X_train, y_train, X_test, y_test, X_val, y_val = train_test_val_split(df[KEEP_COLS], 'score')
-    train_dict, test_dict, val_dict = train_test_val_dicts(df, 'id', 'score')
+    train_dict, test_dict, val_dict = train_test_val_dicts(df, 'url', 'score')
 
     # use grid search to optimize stage 1 & 2 model parameters
     #grid_search_naive_bayes_with_tfidf(df_train['text'].values, df_train['stars'].values)

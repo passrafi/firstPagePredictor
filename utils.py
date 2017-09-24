@@ -333,7 +333,7 @@ def classification_errors(y_true, y_pred, model_name=''):
     perc = lambda x: round(x * 100, 2)
     print "\n{0}".format(model_name)
     print y_true, y_pred
-    import bpdb; bpdb.set_trace()
+    #import bpdb; bpdb.set_trace()
     print "Confusion Matrix:\n", confusion_matrix(y_true, y_pred)
     print "Accuracy:", perc( accuracy_score(y_true, y_pred) )
     print "Precision:", perc( precision_score(y_true, y_pred, average='weighted') )
